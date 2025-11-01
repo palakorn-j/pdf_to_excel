@@ -33,8 +33,9 @@ if uploaded_file and page_input:
                 df = pd.DataFrame(table[1:], columns=table[0])
 
                 # Normalize and uniquify column headers
-                df.columns = pd.io.parsers.ParserBase({'names': df.columns})._maybe_dedup_names(df.columns)
-
+                df.columns = pd.Series(df.columns).astype(str).mask(pd.Series(df.columns).duplicated()).combine_first(
+                    pd.Series(df.columns).astype(str) + '.' + pd.Series(df.columns).duplicated(keep=False).cumsum().astype(str)
+                )
                 dfs.append(df)
 
 
