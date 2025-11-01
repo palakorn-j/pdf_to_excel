@@ -31,8 +31,12 @@ if uploaded_file and page_input:
             table = pdf.pages[p].extract_table()
             if table:
                 df = pd.DataFrame(table[1:], columns=table[0])
-                df.columns = [str(col).strip() for col in df.columns]  # Normalize headers
+
+                # Normalize and uniquify column headers
+                df.columns = pd.io.parsers.ParserBase({'names': df.columns})._maybe_dedup_names(df.columns)
+
                 dfs.append(df)
+
 
     if dfs:
         try:
