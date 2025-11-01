@@ -1,10 +1,10 @@
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 # Install Java
-RUN apt-get update && apt-get install -y openjdk-17-jdk && apt-get clean
+RUN apt-get update && apt-get install -y openjdk-25-jdk && apt-get clean
 
 # Set JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Set working directory
