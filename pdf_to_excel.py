@@ -10,26 +10,28 @@ uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
 page_input = st.text_input("Enter page numbers (e.g., 1, 2-3):")
 
 if uploaded_file and page_input:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        tmp_path = tmp_file.name
+
     try:
-        # Save uploaded file temporarily
-        with open("temp.pdf", "wb") as f:
-            f.write(uploaded_file.read())
-
-        # Parse page input
-        pages = []
-        for part in page_input.split(','):
-            if '-' in part:
-                start, end = map(int, part.split('-'))
-                pages.extend(range(start, end + 1))
-            else:
-                pages.append(int(part.strip()))
-
         # Extract tables
-        dfs = tabula.read_pdf("temp.pdf", pages=pages, multiple_tables=True, lattice=True)
+        dfs = read_pdf(
+            tmp_path,
+            pages=page_input,
+            multiple_tables=True,
+            guess=False,
+            lattice=True  # Use stream=True if needed
+        )
 
+        # Filter out duplicates
+        unique_tables = []
+        for df in dfs:
+            if not any(df.equals(existing) for existing in unique_tables):
+                unique_tables.append(df)
         if dfs:
-            combined_df = pd.concat(dfs, ignore_index=True)
-            st.dataframe(combined_df)
+            combined_df = pd.concat(unique_tables)
+            st.success(f"✅ Extracted {len(combined_df)} rows from pages {page_input}")
 
             # Prepare Excel download
             output = io.BytesIO()
