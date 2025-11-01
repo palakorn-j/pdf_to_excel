@@ -1,6 +1,7 @@
 import streamlit as st
 import tabula
 import pandas as pd
+import tempfile
 import io
 
 st.set_page_config(page_title="PDF to Excel Converter")
