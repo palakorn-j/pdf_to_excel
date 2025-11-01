@@ -17,7 +17,7 @@ if uploaded_file and page_input:
 
     try:
         # Extract tables
-        dfs = read_pdf(
+        dfs = tabula.read_pdf(
             tmp_path,
             pages=page_input,
             multiple_tables=True,
