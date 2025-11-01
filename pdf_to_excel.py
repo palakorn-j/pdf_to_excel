@@ -29,6 +29,7 @@ def dedup_columns(cols):
 
 # Convert button
 if uploaded_file and page_input:
+    # Wrap everything in try-except to catch errors
     try:
         # Parse page input
         pages = []
@@ -58,3 +59,17 @@ if uploaded_file and page_input:
 
             # Prepare Excel for download
             output = io.BytesIO()
+            combined_df.to_excel(output, index=False, engine='openpyxl')
+            output.seek(0)
+
+            st.download_button(
+                label="📥 Download Excel",
+                data=output,
+                file_name="converted.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        else:
+            st.warning("No tables found on selected pages.")
+
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
